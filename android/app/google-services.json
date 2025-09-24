@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "451675011531",
+    "project_id": "growblic-authenticator",
+    "storage_bucket": "growblic-authenticator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451675011531:android:a4587544a87a59775d5e4e",
+        "android_client_info": {
+          "package_name": "com.browblic.authenticator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451675011531-bf580ckc09eqfffbrqroo4lvnadfqguu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNiSku0WMcZjTLNjZI3CH_XsZ6oC_gwRs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451675011531-bf580ckc09eqfffbrqroo4lvnadfqguu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
