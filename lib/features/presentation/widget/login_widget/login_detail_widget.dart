@@ -25,16 +25,6 @@ class LoginDetailsWidget extends StatelessWidget {
           ),
         ),
         Text(
-          'POWERD BY',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(fontSize: 10, color: AppPalette.greyColor),
-        ),
-        Text(
-          'GROWBLIC',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.poppins(fontSize: 14, color: AppPalette.blackColor),
-        ),
-        Text(
           "Save when you don't need it, and it’ll be there for you when you do…",
           textAlign: TextAlign.center,
           style: GoogleFonts.poppins(fontSize: 13, color: AppPalette.greyColor),

@@ -77,21 +77,12 @@ class SplashScreen extends StatelessWidget {
                       ),
                       ConstantWidgets.hight30(context),
                       Text(
-                        "Powerd by",
+                        "Safely protect your valuable assets",
                         style: GoogleFonts.poppins(
                           fontSize: 11,
                           color: AppPalette.whiteColor,
                         ),
-                      ),
-                      Text(
-                        "GROWBLIC",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: AppPalette.whiteColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ConstantWidgets.hight30(context),
+                      ), ConstantWidgets.hight30(context),
                     ],
                   );
                 },

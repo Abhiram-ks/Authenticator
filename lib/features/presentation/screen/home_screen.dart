@@ -2,9 +2,12 @@ import 'dart:developer';
 
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_button.dart';
+import 'package:authenticator/core/common/custom_snackbar.dart';
+import 'package:authenticator/core/common/custom_textfiled.dart';
 import 'package:authenticator/core/constant/app_images.dart';
 import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
+import 'package:authenticator/core/validation/validation_helper.dart';
 import 'package:authenticator/features/presentation/bloc/progresser_cubit/progresser_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
-
 
 class TotpUtils {
   static const _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -37,18 +39,19 @@ class TotpUtils {
     }
     return Uint8List.fromList(bytes);
   }
-  
+
   static String generateTOTPCode({
     required String secret,
     int digits = 6,
     int period = 30,
-    int? forTimeSeconds, 
+    int? forTimeSeconds,
   }) {
     try {
       final key = base32Decode(secret);
-      final unixTime = (forTimeSeconds != null)
-          ? forTimeSeconds
-          : DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
+      final unixTime =
+          (forTimeSeconds != null)
+              ? forTimeSeconds
+              : DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
       final counter = unixTime ~/ period;
 
       final counterBytes = _int64ToBytes(counter);
@@ -56,7 +59,8 @@ class TotpUtils {
       final digest = hmac.convert(counterBytes).bytes;
 
       final offset = digest[digest.length - 1] & 0x0f;
-      final binary = ((digest[offset] & 0x7f) << 24) |
+      final binary =
+          ((digest[offset] & 0x7f) << 24) |
           ((digest[offset + 1] & 0xff) << 16) |
           ((digest[offset + 2] & 0xff) << 8) |
           (digest[offset + 3] & 0xff);
@@ -151,11 +155,11 @@ class _QrResultScreenState extends State<QrResultScreen> {
   void _verify() {
     final entered = _ctrl.text.trim();
     if (entered.isEmpty) {
-      _showResult('Please enter the 6-digit code', Colors.orange);
+      _showResult('Please enter the 6-digit code', AppPalette.blueColor);
       return;
     }
     if (entered == _code) {
-      _showResult('✅ Code verified — correct', Colors.green);
+      _showResult('Code verified — correct', AppPalette.greenColor);
     } else {
       final period = widget.account.period;
       final now = DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000;
@@ -173,9 +177,12 @@ class _QrResultScreenState extends State<QrResultScreen> {
       );
 
       if (entered == prevCode || entered == nextCode) {
-        _showResult('✅ Code accepted (clock drift) — correct', Colors.green);
+        _showResult(
+          'Code accepted (clock drift) — correct',
+          AppPalette.blueColor,
+        );
       } else {
-        _showResult('❌ Incorrect code', Colors.red);
+        _showResult('Incorrect code', AppPalette.redColor);
       }
     }
   }
@@ -185,10 +192,7 @@ class _QrResultScreenState extends State<QrResultScreen> {
       _verifyMessage = text;
       _verifyColor = color;
     });
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
-    );
+     CustomSnackBar.show(context, message: text, backgroundColor: AppPalette.blueColor);
   }
 
   @override
@@ -203,103 +207,144 @@ class _QrResultScreenState extends State<QrResultScreen> {
     final period = widget.account.period;
     final progress = (_remaining / (period > 0 ? period : 30)).clamp(0.0, 1.0);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("QR Account Details")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Account info
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Issuer: ${widget.account.issuer}", style: GoogleFonts.poppins(fontSize: 16)),
-                  const SizedBox(height: 6),
-                  Text("Label: ${widget.account.label}", style: GoogleFonts.poppins(fontSize: 16)),
-                  const SizedBox(height: 6),
-                ],
-              ),
-            ),
+    return BlocProvider(
+      create: (context) => ProgresserCubit(),
+      child: LayoutBuilder(
+        builder: (context, constraints)  {
+          final width = constraints.maxWidth;
+          final heigh = constraints.maxHeight;
 
-            const SizedBox(height: 18),
-
-            // Big code display
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
-                child: Column(
-                  children: [
-                    Text(
-                      _code,
-                      style: GoogleFonts.robotoMono(fontSize: 48, letterSpacing: 8, fontWeight: FontWeight.w600),
+          return ColoredBox(
+            color: AppPalette.blueColor,
+            child: SafeArea(
+              child: Scaffold(
+                appBar: CustomAppBar(
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: Icon(Icons.info_outlined),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ],
+                  isTitle: true,
+                  title: 'Scan QR Code',
+                  backgroundColor: AppPalette.whiteColor,
+                ),
+                body: SingleChildScrollView(
+                  
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * .06, vertical: heigh *.01),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Expires in $_remaining s", style: GoogleFonts.poppins(fontSize: 12)),
-                        const SizedBox(width: 12),
-                        SizedBox(
-                          width: 80,
-                          child: LinearProgressIndicator(
-                            value: progress,
+                         Text(
+                              'Authenticator',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            ConstantWidgets.hight10(context),
+                            Text(
+                             'End-to-end encrypted communication ensuring complete data security.',
+                            ), ConstantWidgets.hight20(context),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Issuer: ${widget.account.issuer}",
+                                style: GoogleFonts.poppins(fontSize: 16),
+                              ),
+                              Text(
+                                "Label: ${widget.account.label}",
+                                style: GoogleFonts.poppins(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                  
+                       ConstantWidgets.hight20(context),
+                        Card(
+                          color: AppPalette.whiteColor,
+                          elevation: 7,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 18.0,
+                              horizontal: 12.0,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  _code,
+                                  style: GoogleFonts.robotoMono(
+                                    fontSize: 48,
+                                    letterSpacing: 8,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                ConstantWidgets.hight10(context),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Expires in $_remaining s",
+                                      style: GoogleFonts.poppins(fontSize: 12),
+                                    ),
+                                     ConstantWidgets.width20(context),
+                                    SizedBox(
+                                      width: 80,
+                                      child: LinearProgressIndicator(value: progress,backgroundColor: AppPalette.hintColor,color: AppPalette.blueColor,),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        ConstantWidgets.hight20(context),
+                        TextFormFieldWidget(label: 'Varify Code', hintText: 'Enter code to varify', prefixIcon: Icons.lock_clock_outlined, controller: _ctrl, validate: ValidatorHelper.textFieldValidation),
+                        ConstantWidgets.hight20(context),
+                        CustomButton(text: "Verify", onPressed: _verify),
+                        if (_verifyMessage != null) ...[
+                          ConstantWidgets.hight10(context),
+                          Center(
+                            child: Text(
+                              _verifyMessage ?? 'Unexpected error',
+                              style: GoogleFonts.poppins(color: _verifyColor),
+                            ),
+                          ),
+                        ],
+                        ConstantWidgets.hight20(context),
+                        
+                        Center(
+                          child: Text(
+                            "Secret: ${widget.account.secret}",
+                            style: GoogleFonts.poppins(fontSize: 12),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "Digits: ${widget.account.digits}, Period: ${widget.account.period}s",
+                            style: GoogleFonts.poppins(fontSize: 12),
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-
-            const SizedBox(height: 18),
-
-            // Manual verify input
-            TextField(
-              controller: _ctrl,
-              keyboardType: TextInputType.number,
-              maxLength: widget.account.digits,
-              decoration: InputDecoration(
-                labelText: 'Enter code to verify',
-                counterText: '',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _verify,
-                child: Text('Verify', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-              ),
-            ),
-
-            if (_verifyMessage != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                _verifyMessage!,
-                style: GoogleFonts.poppins(color: _verifyColor),
-              ),
-            ],
-
-            const SizedBox(height: 14),
-            // Raw secret + meta for developer debugging (optional)
-            Text("Secret: ${widget.account.secret}", style: GoogleFonts.poppins(fontSize: 12)),
-            Text("Digits: ${widget.account.digits}, Period: ${widget.account.period}s", style: GoogleFonts.poppins(fontSize: 12)),
-          ],
-        ),
+          );
+        }
       ),
     );
   }
 }
 
-// -----------------------------
-// Parse otpauth:// URI
-// -----------------------------
 AuthAccount? parseOtpAuthUri(String uriStr) {
   try {
     final uri = Uri.parse(uriStr);
@@ -337,9 +382,6 @@ AuthAccount? parseOtpAuthUri(String uriStr) {
   }
 }
 
-// -----------------------------
-// Home Screen
-// -----------------------------
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -355,9 +397,22 @@ class HomeScreen extends StatelessWidget {
               final width = constraints.maxWidth;
               final height = constraints.maxHeight;
               return Scaffold(
-                appBar: CustomAppBar(isTitle: true, title: 'True Auth'),
+                appBar: CustomAppBar(
+                  isTitle: true,
+                  title: 'Authenticator',
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.info_outline_rounded),
+                      ),
+                    ),
+                  ],
+                ),
                 body: SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   physics: const BouncingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: width * 0.06),
@@ -392,41 +447,59 @@ class HomeScreen extends StatelessWidget {
                         ),
                         ConstantWidgets.hight30(context),
                         CustomButton(
-                          text: "Scan Now",
+                          text: "Scan QR Code",
                           onPressed: () async {
-                            final result = await Navigator.of(context).push<String?>(
-                              MaterialPageRoute(builder: (_) => const QrScannerScreen()),
+                            final result = await Navigator.of(
+                              context,
+                            ).push<String?>(
+                              MaterialPageRoute(
+                                builder: (_) => const QrScannerScreen(),
+                              ),
                             );
-
                             if (result != null && result.isNotEmpty) {
                               final parsed = parseOtpAuthUri(result);
                               if (parsed != null) {
+                                if (!context.mounted) return;
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => QrResultScreen(account: parsed),
+                                    builder:
+                                        (_) => QrResultScreen(account: parsed),
                                   ),
-                                );
+                                );  
                               } else {
+                                if (!context.mounted) return;
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => RawQrResultScreen(rawValue: result),
+                                    builder:
+                                        (_) =>
+                                            RawQrResultScreen(rawValue: result),
                                   ),
                                 );
                               }
                             }
                           },
                         ),
-                       ConstantWidgets.hight10(context),
+                        ConstantWidgets.hight10(context),
                         Row(
                           children: [
                             Expanded(
-                            
-                              child: CustomButton(text: 'Enable Backup', onPressed: (){}, bgColor: AppPalette.whiteColor,borderColor: AppPalette.blueColor,textColor: AppPalette.blueColor,)
-                             
+                              child: CustomButton(
+                                text: 'Enable Backup',
+                                onPressed: () {},
+                                bgColor: AppPalette.whiteColor,
+                                borderColor: AppPalette.blueColor,
+                                textColor: AppPalette.blueColor,
+                              ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child:  CustomButton(text: 'Import Account', onPressed: (){}, bgColor: AppPalette.whiteColor,borderColor: AppPalette.blueColor,textColor: AppPalette.blueColor,)
+                              child: CustomButton(
+                                text: 'Import Account',
+                                onPressed: () {},
+                                bgColor: AppPalette.whiteColor,
+                                borderColor: AppPalette.blueColor,
+                                textColor: AppPalette.blueColor,
+                              ),
                             ),
                           ],
                         ),
@@ -443,9 +516,6 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// -----------------------------
-// QR Scanner Screen
-// -----------------------------
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
 
@@ -460,7 +530,6 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   void _onDetect(BarcodeCapture capture) {
     if (_isDetecting) return;
     final List<Barcode> barcodes = capture.barcodes;
-     log('$barcodes');
     if (barcodes.isEmpty) return;
     final raw = barcodes.first.rawValue ?? '';
     if (raw.isEmpty) return;
@@ -472,19 +541,181 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Scan QR")),
-      body: MobileScanner(
-        controller: _controller,
-        onDetect: _onDetect,
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          MobileScanner(controller: _controller, onDetect: _onDetect),
+          Container(
+            decoration: ShapeDecoration(
+              shape: QrScannerOverlayShape(
+                borderColor: AppPalette.blueColor,
+                borderRadius: 16,
+                borderLength: 32,
+                borderWidth: 6,
+                cutOutSize: MediaQuery.of(context).size.width * 0.7,
+              ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: [
+                const Text(
+                  "Align QR code inside the frame",
+                  style: TextStyle(
+                    color: AppPalette.greyColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppPalette.blueColor,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 22,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close, color: AppPalette.whiteColor),
+                  label: const Text(
+                    "Cancel",
+                    style: TextStyle(color: AppPalette.whiteColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// -----------------------------
-// Result Screens
-// -----------------------------
+class QrScannerOverlayShape extends ShapeBorder {
+  final Color borderColor;
+  final double borderWidth;
+  final double borderRadius;
+  final double borderLength;
+  final double cutOutSize;
 
+  const QrScannerOverlayShape({
+    this.borderColor = Colors.white,
+    this.borderWidth = 4.0,
+    this.borderRadius = 12.0,
+    this.borderLength = 24.0,
+    required this.cutOutSize,
+  });
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      Path()..addRect(rect);
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      Path()..addRect(rect);
+
+  @override
+  void paint(
+    Canvas canvas,
+    Rect rect, {
+    TextDirection? textDirection,
+    BoxShape? shape,
+    BorderRadius? borderRadius,
+  }) {
+    final paint =
+        Paint()
+          ..color = Colors.black54
+          ..style = PaintingStyle.fill;
+
+    final cutOutRect = Rect.fromCenter(
+      center: rect.center,
+      width: cutOutSize,
+      height: cutOutSize,
+    );
+
+    final backgroundPath = Path.combine(
+      PathOperation.difference,
+      Path()..addRect(rect),
+      Path()..addRRect(
+        RRect.fromRectXY(
+          cutOutRect,
+          borderRadius! as double,
+          borderRadius as double,
+        ),
+      ),
+    );
+
+    canvas.drawPath(backgroundPath, paint);
+
+    final borderPaint =
+        Paint()
+          ..color = borderColor
+          ..strokeWidth = borderWidth
+          ..style = PaintingStyle.stroke;
+
+    final double halfBorder = borderWidth / 2;
+    final double cornerLength = borderLength;
+
+    canvas.drawLine(
+      cutOutRect.topLeft + Offset(0, halfBorder),
+      cutOutRect.topLeft + Offset(cornerLength, halfBorder),
+      borderPaint,
+    );
+    canvas.drawLine(
+      cutOutRect.topLeft + Offset(halfBorder, 0),
+      cutOutRect.topLeft + Offset(halfBorder, cornerLength),
+      borderPaint,
+    );
+
+    canvas.drawLine(
+      cutOutRect.topRight + Offset(-cornerLength, halfBorder),
+      cutOutRect.topRight + Offset(0, halfBorder),
+      borderPaint,
+    );
+    canvas.drawLine(
+      cutOutRect.topRight + Offset(-halfBorder, 0),
+      cutOutRect.topRight + Offset(-halfBorder, cornerLength),
+      borderPaint,
+    );
+
+    canvas.drawLine(
+      cutOutRect.bottomLeft + Offset(0, -halfBorder),
+      cutOutRect.bottomLeft + Offset(cornerLength, -halfBorder),
+      borderPaint,
+    );
+    canvas.drawLine(
+      cutOutRect.bottomLeft + Offset(halfBorder, -cornerLength),
+      cutOutRect.bottomLeft + Offset(halfBorder, 0),
+      borderPaint,
+    );
+
+    canvas.drawLine(
+      cutOutRect.bottomRight + Offset(-cornerLength, -halfBorder),
+      cutOutRect.bottomRight + Offset(0, -halfBorder),
+      borderPaint,
+    );
+    canvas.drawLine(
+      cutOutRect.bottomRight + Offset(-halfBorder, -cornerLength),
+      cutOutRect.bottomRight + Offset(-halfBorder, 0),
+      borderPaint,
+    );
+  }
+
+  @override
+  ShapeBorder scale(double t) => this;
+}
 
 class RawQrResultScreen extends StatelessWidget {
   final String rawValue;
