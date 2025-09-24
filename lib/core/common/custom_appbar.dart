@@ -10,16 +10,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? isTitle;
   final Color? titleColor;
   final Color? iconColor;
-
+  final List<Widget>? actions; 
   const CustomAppBar({
     super.key,
     this.title,
     this.backgroundColor,
     this.titleColor,
     this.iconColor,
-    this.isTitle = false
-  })
-      : preferredSize = const Size.fromHeight(kToolbarHeight);
+    this.isTitle = false,
+    this.actions, 
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +27,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: isTitle == true
           ? Text(
               title!,
-              style:  GoogleFonts.poppins(
-                color:titleColor ?? Colors.black,
+              style: GoogleFonts.poppins(
+                color: titleColor ?? Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             )
           : null,
-      backgroundColor:backgroundColor ?? AppPalette.whiteColor,
-      iconTheme: IconThemeData(color:iconColor ?? AppPalette.blackColor),
+      backgroundColor: backgroundColor ?? AppPalette.whiteColor,
+      iconTheme: IconThemeData(color: iconColor ?? AppPalette.blackColor),
       elevation: 0,
       scrolledUnderElevation: 0,
+      actions: actions,
     );
   }
 }

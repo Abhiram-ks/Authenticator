@@ -12,7 +12,6 @@ class AppRoutes {
   static const String pdiform = '/PdiformScreen';
   static const String createuser = '/createuser_screen';
 
-
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
