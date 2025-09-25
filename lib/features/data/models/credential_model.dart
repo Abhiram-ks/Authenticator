@@ -1,6 +1,7 @@
 import 'package:authenticator/features/domain/entity/credential_entity.dart';
+
 class CredentialModel extends CredentialEntity {
-  final String? docId;
+  final String? docId; 
 
   const CredentialModel({
     this.docId,
@@ -40,11 +41,12 @@ class CredentialModel extends CredentialEntity {
     super.isNotes = false,
   });
 
+  /// ✅ Factory constructor to create model from Firestore JSON
   factory CredentialModel.fromJson(Map<String, dynamic> json, String docId) {
     return CredentialModel(
+      docId: docId,
       uid: json['uid'] ?? "",
       name: json['name'] ?? "",
-      docId: docId,
       notes: json['notes'] ?? "",
       username: json['username'],
       password: json['password'],
@@ -80,10 +82,10 @@ class CredentialModel extends CredentialEntity {
     );
   }
 
+  /// ✅ Convert model to Firestore JSON
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
-      'docId': docId,
       'name': name,
       'notes': notes,
       'username': username,
@@ -118,5 +120,82 @@ class CredentialModel extends CredentialEntity {
       'isLogin': isLogin,
       'isNotes': isNotes,
     };
+  }
+
+  /// ✅ CopyWith for easy updates
+  CredentialModel copyWith({
+    String? docId,
+    String? uid,
+    String? name,
+    String? notes,
+    String? username,
+    String? password,
+    String? url,
+    String? cardHolderName,
+    String? cardNumber,
+    String? cardType,
+    String? expiryDate,
+    String? pin,
+    String? postalCode,
+    String? firstName,
+    String? lastName,
+    String? sex,
+    String? birthday,
+    String? occupation,
+    String? company,
+    String? department,
+    String? jobTitle,
+    String? identityAddress,
+    String? email,
+    String? homePhone,
+    String? cellPhone,
+    String? addressLine1,
+    String? addressLine2,
+    String? city,
+    String? country,
+    String? state,
+    bool? isAddress,
+    bool? isCreditCard,
+    bool? isIdentity,
+    bool? isLogin,
+    bool? isNotes,
+  }) {
+    return CredentialModel(
+      docId: docId ?? this.docId,
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      notes: notes ?? this.notes,
+      username: username ?? this.username,
+      password: password ?? this.password,
+      url: url ?? this.url,
+      cardHolderName: cardHolderName ?? this.cardHolderName,
+      cardNumber: cardNumber ?? this.cardNumber,
+      cardType: cardType ?? this.cardType,
+      expiryDate: expiryDate ?? this.expiryDate,
+      pin: pin ?? this.pin,
+      postalCode: postalCode ?? this.postalCode,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      sex: sex ?? this.sex,
+      birthday: birthday ?? this.birthday,
+      occupation: occupation ?? this.occupation,
+      company: company ?? this.company,
+      department: department ?? this.department,
+      jobTitle: jobTitle ?? this.jobTitle,
+      identityAddress: identityAddress ?? this.identityAddress,
+      email: email ?? this.email,
+      homePhone: homePhone ?? this.homePhone,
+      cellPhone: cellPhone ?? this.cellPhone,
+      addressLine1: addressLine1 ?? this.addressLine1,
+      addressLine2: addressLine2 ?? this.addressLine2,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      state: state ?? this.state,
+      isAddress: isAddress ?? this.isAddress,
+      isCreditCard: isCreditCard ?? this.isCreditCard,
+      isIdentity: isIdentity ?? this.isIdentity,
+      isLogin: isLogin ?? this.isLogin,
+      isNotes: isNotes ?? this.isNotes,
+    );
   }
 }
