@@ -35,8 +35,6 @@ class ValidatorHelper {
           return "Enter a valid URL";
         }
         break;
-
-      case "password":
       case "pin":
         if (data.length < 4) {
           return "$fieldName must be at least 4 characters";

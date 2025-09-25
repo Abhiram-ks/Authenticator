@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_textfiled.dart';
 import 'package:authenticator/core/constant/constant.dart';
@@ -184,9 +182,9 @@ extension ItemTypeExtension on ItemType {
       case ItemType.notes:
         return  AppPalette.orengeColor;
       case ItemType.identity:
-        return AppPalette.redColor;
+        return AppPalette.greenColor;
       case ItemType.address:
-        return AppPalette.greyColor;
+        return AppPalette.redColor;
     }
   }
 

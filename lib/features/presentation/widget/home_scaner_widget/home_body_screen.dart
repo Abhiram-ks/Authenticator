@@ -98,7 +98,7 @@ class HomeBody extends StatelessWidget {
               children: [
                 Expanded(
                   child: CustomButton(
-                    text: 'Enable Backup',
+                    text: 'Cloud Sync',
                     onPressed: () {
                          context.read<ButtomNavCubit>().selectItem(
                         NavItem.cloud,

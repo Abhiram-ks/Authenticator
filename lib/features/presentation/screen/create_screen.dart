@@ -1,10 +1,12 @@
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_button.dart';
+import 'package:authenticator/core/common/custom_snackbar.dart';
 import 'package:authenticator/core/common/custom_textfiled.dart';
 import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
+import 'package:authenticator/core/validation/validation_helper.dart';
 import 'package:authenticator/features/presentation/bloc/create_cubit/create_cubit.dart';
-import 'package:authenticator/features/presentation/bloc/cubit/form_cubit.dart';
+import 'package:authenticator/features/presentation/bloc/form_cubit/form_cubit.dart';
 import 'package:authenticator/features/presentation/bloc/progresser_cubit/progresser_cubit.dart';
 import 'package:authenticator/features/presentation/screen/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,10 @@ class CreateScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
     return LayoutBuilder(
       builder: (context, constraints) {
         double screenWidth = constraints.maxWidth;
-        double screenHeight = constraints.maxHeight;
  
         return BlocBuilder<CreateCubit, ItemType?>(
           builder: (context, selectedItem) {
@@ -72,33 +74,39 @@ class CreateScreen extends StatelessWidget {
                       onTap: () => FocusScope.of(context).unfocus(),
                       child: Padding(
                         padding:  EdgeInsets.symmetric(horizontal:screenWidth * .05),
-                        child: BlocBuilder<FormCubit, CustomFormState>(
-                          builder: (context, formState) {
-                            final fields = selectedItem.requiredFields;
-
-                            return ListView.separated(
-                              keyboardDismissBehavior:
-                                  ScrollViewKeyboardDismissBehavior.onDrag,
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: fields.length,
-                              separatorBuilder:
-                                  (_, __) => ConstantWidgets.hight10(context),
-                              itemBuilder: (context, index) {
-                                final field = fields[index];
-                                return TextFormFieldWidget(
-                                  label: '$field *',
-                                  hintText: 'Type Your $field',
-                                  isPasswordField: field == "Password" || field == "Card Number" || field == "Expiry Date" || field == "Pin" || field == "Email" ,
-                                  maxLines: field == "Notes" ? 4 : 1,
-                                  minLines: field == "Notes" ? 4 : 1,
-                                  onChanged:
-                                      (val) => context
-                                          .read<FormCubit>()
-                                          .updateField(field, val),
-                                );
-                              },
-                            );
-                          },
+                        child: Form(
+                          key: _formkey,
+                          child: BlocBuilder<FormCubit, CustomFormState>(
+                            builder: (context, formState) {
+                              final fields = selectedItem.requiredFields;
+                          
+                              return ListView.separated(
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: fields.length,
+                                separatorBuilder:
+                                    (_, __) => ConstantWidgets.hight10(context),
+                                itemBuilder: (context, index) {
+                                  final field = fields[index];
+                                  return TextFormFieldWidget(
+                                    label: '$field *',
+                                    hintText: 'Type Your $field',
+                                    isPasswordField:  field.toLowerCase().contains("password") ||
+                                                     field.toLowerCase().contains("card number") ||
+                                                     field.toLowerCase().contains("expiry date") ||
+                                                     field.toLowerCase().contains("pin"),
+                                    maxLines: field == "Notes" ? 4 : 1,
+                                    minLines: field == "Notes" ? 4 : 1,
+                                    validate: (val) => ValidatorHelper.validateField(field, val),
+                                    onChanged:(val) => context
+                                            .read<FormCubit>()
+                                            .updateField(field, val),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -118,7 +126,12 @@ class CreateScreen extends StatelessWidget {
                                       formState.canSave
                                           ? 'Save'
                                           : 'Complete All Fields',
-                                  onPressed: formState.canSave ? () {} : null,
+                                  onPressed: formState.canSave ? () {
+                                    if  (_formkey.currentState?.validate() ?? false) {
+                                    }else {
+                                      CustomSnackBar.show(context, message: "Type your answer before proced", textAlign: TextAlign.center, backgroundColor: AppPalette.redColor);
+                                    }
+                                  } : null,
                                   bgColor:
                                       formState.canSave
                                           ? AppPalette.blueColor
