@@ -7,6 +7,7 @@ import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/core/validation/validation_helper.dart';
 import 'package:authenticator/features/presentation/bloc/progresser_cubit/progresser_cubit.dart';
+import 'package:authenticator/features/data/datasource/account_remote_datasource.dart';
 import 'package:authenticator/features/presentation/widget/home_scaner_widget/scaner_auth_account_data.dart';
 import 'package:authenticator/features/presentation/widget/home_scaner_widget/scaner_totp_utils.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +30,15 @@ class _QrResultScreenState extends State<QrResultScreen> {
   final TextEditingController _ctrl = TextEditingController();
   String? _verifyMessage;
   Color? _verifyColor;
+  final AccountRemoteDataSource _accountDS = AccountRemoteDataSource();
+  bool _saved = false;
 
   @override
   void initState() {
     super.initState();
     _updateCode();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateCode());
+    _saveIfNeeded();
   }
 
   void _updateCode() {
@@ -57,6 +61,20 @@ class _QrResultScreenState extends State<QrResultScreen> {
       _code = code;
       _remaining = remaining;
     });
+  }
+
+  Future<void> _saveIfNeeded() async {
+    try {
+      if (_saved) return;
+      await _accountDS.saveAccount(widget.account);
+      if (mounted) {
+        setState(() {
+          _saved = true;
+        });
+      }
+    } catch (e) {
+      // Ignore if not signed in or any error; UI remains functional
+    }
   }
 
   void _verify() {
