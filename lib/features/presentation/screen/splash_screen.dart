@@ -1,6 +1,7 @@
 import 'package:authenticator/core/constant/app_images.dart';
 import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
+import 'package:authenticator/features/data/datasource/auth_local_datasource.dart';
 import 'package:authenticator/features/presentation/bloc/splash_bloc/splash_bloc.dart';
 import 'package:authenticator/features/presentation/widget/splash_widget/splash_state_handle.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SplashBloc()..add(SplashRequest()),
+      create: (context) => SplashBloc(local: AuthLocalDatasource())..add(SplashRequest()),
       child: BlocListener<SplashBloc, SplashState>(
         listener: (context, splashState) {
           splashStateHandle(context, splashState);

@@ -1,8 +1,10 @@
 import 'package:authenticator/core/routes/app_routes.dart';
 import 'package:authenticator/core/themes/app_themes.dart';
+import 'package:authenticator/features/presentation/bloc/create_cubit/create_cubit.dart';
 import 'package:authenticator/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +17,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return BlocProvider(
+      create: (context) => CreateCubit(),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'INS PETRO',
+        title: 'True Auth',
         theme: AppTheme.lightTheme,
         initialRoute: AppRoutes.splash,
         onGenerateRoute: AppRoutes.generateRoute,
+      ),
     );
   }
 }

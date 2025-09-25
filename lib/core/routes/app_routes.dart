@@ -1,5 +1,6 @@
 
 import 'package:authenticator/core/constant/constant.dart';
+import 'package:authenticator/features/presentation/screen/create_screen.dart';
 import 'package:authenticator/features/presentation/screen/login_screen.dart';
 import 'package:authenticator/features/presentation/screen/navigation.dart';
 import 'package:authenticator/features/presentation/screen/splash_screen.dart';
@@ -9,8 +10,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String login  = '/login_screen';
   static const String nav   = '/navigation';
-  static const String pdiform = '/PdiformScreen';
-  static const String createuser = '/createuser_screen';
+  static const String creteScreen = '/create_screen';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -20,6 +20,8 @@ class AppRoutes {
       return MaterialPageRoute(builder: (_) => LoginScreen());
       case nav:
       return MaterialPageRoute(builder: (_) => BottomNavigationControllers());
+      case creteScreen:
+      return MaterialPageRoute(builder: (_) => CreateScreen());
       default:
         return MaterialPageRoute(
           builder:
