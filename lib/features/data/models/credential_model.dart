@@ -1,10 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:authenticator/features/domain/entity/credential_entity.dart';
 
 class CredentialModel extends CredentialEntity {
-  final String? docId; 
+  final String? docId;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const CredentialModel({
     this.docId,
+    this.createdAt,
+    this.updatedAt,
     required super.uid,
     required super.name,
     super.notes = "",
@@ -79,6 +84,12 @@ class CredentialModel extends CredentialEntity {
       isIdentity: json['isIdentity'] ?? false,
       isLogin: json['isLogin'] ?? false,
       isNotes: json['isNotes'] ?? false,
+      createdAt: json['createdAt'] != null
+          ? (json['createdAt'] as Timestamp).toDate()
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? (json['updatedAt'] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -119,6 +130,10 @@ class CredentialModel extends CredentialEntity {
       'isIdentity': isIdentity,
       'isLogin': isLogin,
       'isNotes': isNotes,
+
+      /// 🔹 Firestore timestamps
+      'createdAt': createdAt ?? FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     };
   }
 
@@ -159,6 +174,8 @@ class CredentialModel extends CredentialEntity {
     bool? isIdentity,
     bool? isLogin,
     bool? isNotes,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return CredentialModel(
       docId: docId ?? this.docId,
@@ -196,6 +213,8 @@ class CredentialModel extends CredentialEntity {
       isIdentity: isIdentity ?? this.isIdentity,
       isLogin: isLogin ?? this.isLogin,
       isNotes: isNotes ?? this.isNotes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

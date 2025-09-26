@@ -111,7 +111,7 @@ class CreateScreen extends StatelessWidget {
                                   final field = fields[index];
                                   return TextFormFieldWidget(
                                     label: '$field *',
-                                    hintText: 'Type Your $field',
+                                    hintText:field == 'Name'? 'What type of account?' : 'Type Your $field',
                                     isPasswordField:
                                         field.toLowerCase().contains(
                                           "password",
@@ -194,8 +194,7 @@ class CreateScreen extends StatelessWidget {
                                           }
                                         }
                                         : null,
-                                bgColor:
-                                    formState.canSave
+                                bgColor:  formState.canSave
                                         ? AppPalette.blueColor
                                         : AppPalette.greyColor,
                               ),

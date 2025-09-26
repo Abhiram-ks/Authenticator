@@ -8,4 +8,5 @@ class CredentialUsecase {
   Future<bool> execute(CredentialEntity credential) async {
     return await repo.addCredential(credential: credential);
   }
+
 }

@@ -49,4 +49,12 @@ class CredentialRemoteDataSourceImpl  implements CredentialRepositroy  {
 
     return await remote.addCredential(model);
   }
+  
+
+  //!Fetch credentials as a stream
+  @override
+  Stream<List<CredentialEntity>> fetchCredentials({required String uid}){
+    return remote.fetchCredentials(uid);
+  }
+
 }

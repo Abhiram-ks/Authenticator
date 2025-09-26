@@ -1,4 +1,9 @@
 import 'package:authenticator/core/themes/app_colors.dart';
+import 'package:authenticator/features/data/datasource/auth_local_datasource.dart';
+import 'package:authenticator/features/data/datasource/credential_remote_datasource.dart';
+import 'package:authenticator/features/data/repo/credential_repo_impl.dart';
+import 'package:authenticator/features/domain/usecase/fetch_credential_usecase.dart';
+import 'package:authenticator/features/presentation/bloc/fetch_credential_bloc/fetch_credentail_bloc.dart';
 import 'package:authenticator/features/presentation/bloc/navigation_cubit/navigation_cubit.dart';
 import 'package:authenticator/features/presentation/screen/cloud_screen.dart';
 import 'package:authenticator/features/presentation/screen/home_screen.dart';
@@ -22,8 +27,11 @@ class BottomNavigationControllers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ButtomNavCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ButtomNavCubit()),
+        BlocProvider(create: (context) => FetchCredentailBloc(local:AuthLocalDatasource() , usecase: FetchCredentialsUseCase(CredentialRemoteDataSourceImpl(remote: CredentialRemoteDataSource())))),
+      ],
       child: Theme(
         data: Theme.of(context).copyWith(
           splashColor: AppPalette.whiteColor.withAlpha((0.3 * 225).round()),
