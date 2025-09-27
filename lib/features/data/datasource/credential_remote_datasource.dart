@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -34,4 +36,22 @@ class CredentialRemoteDataSource {
       throw Exception("Unexpected error occured: $e");
     }
   }
+
+   //! Fetch single credential by docId
+Stream<CredentialModel> fetchSingleCredential(String docId) {
+  return _firestore
+      .collection("credentials")
+      .doc(docId)
+      .snapshots()
+      .map((doc) {
+    final data = doc.data();
+    if (doc.exists && data != null) {
+      return CredentialModel.fromJson(data, doc.id);
+    } else {
+      throw Exception("Credential not found for docId: $docId");
+    }
+  });
+}
+
+
 }

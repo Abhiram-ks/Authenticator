@@ -3,10 +3,10 @@ import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:authenticator/features/domain/entity/credential_entity.dart';
 import 'package:authenticator/features/domain/repo/credential_repo.dart';
 
-class CredentialRemoteDataSourceImpl  implements CredentialRepositroy  {
+class CredentialRemoteDataSourceImpl implements CredentialRepositroy {
   final CredentialRemoteDataSource remote;
 
-  CredentialRemoteDataSourceImpl ({required this.remote});
+  CredentialRemoteDataSourceImpl({required this.remote});
 
   @override
   Future<bool> addCredential({required CredentialEntity credential}) async {
@@ -49,12 +49,19 @@ class CredentialRemoteDataSourceImpl  implements CredentialRepositroy  {
 
     return await remote.addCredential(model);
   }
-  
 
   //!Fetch credentials as a stream
   @override
-  Stream<List<CredentialEntity>> fetchCredentials({required String uid}){
+  Stream<List<CredentialModel>> fetchCredentials({
+    required String uid,
+    String? quary,
+  }) {
     return remote.fetchCredentials(uid);
   }
 
+  //! Fetch single credential as a stream
+  @override
+  Stream<CredentialModel> fetchSingleCredential({required String docId}) {
+    return remote.fetchSingleCredential(docId);
+  }
 }

@@ -1,15 +1,19 @@
+import 'dart:developer';
+
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_textfiled.dart';
 import 'package:authenticator/core/constant/constant.dart';
+import 'package:authenticator/core/debouncer/debouncer.dart';
 import 'package:authenticator/core/routes/app_routes.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
-import 'package:authenticator/core/validation/validation_helper.dart';
 import 'package:authenticator/features/domain/entity/credential_entity.dart';
 import 'package:authenticator/features/presentation/bloc/create_cubit/create_cubit.dart';
 import 'package:authenticator/features/presentation/bloc/fetch_credential_bloc/fetch_credentail_bloc.dart';
+import 'package:authenticator/features/presentation/screen/detail_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
@@ -55,16 +59,36 @@ class SearchScreen extends StatelessWidget {
     );
   }
 }
-
-class SearchBody extends StatelessWidget {
+class SearchBody extends StatefulWidget {
+  final double width;
   const SearchBody({super.key, required this.width});
 
-  final double width;
+  @override
+  State<SearchBody> createState() => _SearchBodyState();
+}
+
+class _SearchBodyState extends State<SearchBody> {
+  late final Debouncer _debouncer;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _debouncer = Debouncer(milliseconds: 500);
+  }
+
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+      padding: EdgeInsets.symmetric(horizontal: widget.width * 0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -73,7 +97,11 @@ class SearchBody extends StatelessWidget {
             borderRadius: 30,
             hintText: 'Search',
             prefixIcon: CupertinoIcons.search,
-            validate: ValidatorHelper.textFieldValidation,
+            onChanged: (val){
+              _debouncer.run(() {
+                context.read<FetchCredentailBloc>().add(FetchCredentialsSearch(query: val));
+              });
+            },
           ),
 
           ConstantWidgets.hight10(context),
@@ -93,7 +121,7 @@ class SearchBody extends StatelessWidget {
                   ),
                   title: const Text("Category"),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap:() => showAddBottomSheet(context, false),
+                  onTap: () => showAddBottomSheet(context, false),
                 ),
                 const Divider(height: 1, color: AppPalette.hintColor),
                 ListTile(
@@ -110,7 +138,10 @@ class SearchBody extends StatelessWidget {
           ),
 
           ConstantWidgets.hight20(context),
-          const Text("Safely protect your valuable assets", style: TextStyle(fontSize: 12),),
+          const Text(
+            "Safely protect your valuable assets",
+            style: TextStyle(fontSize: 12),
+          ),
 
           ConstantWidgets.hight10(context),
           SearchBuilderWidget(),
@@ -142,32 +173,55 @@ class _SearchBuilderWidgetState extends State<SearchBuilderWidget> {
       child: BlocBuilder<FetchCredentailBloc, FetchCredentailState>(
         builder: (context, state) {
           if (state is FetchCredentailLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is FetchCredentailError) {
-            return Center(child: Text(state.message));
-          } else if (state is FetchCredentailEmpty) {
-            return const Center(child: Text("No credentials found"));
-          } else if (state is FetchCredentailLoad) {
+               return  Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 12,
+                  width: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    backgroundColor: AppPalette.greyColor,
+                    color: AppPalette.blueColor,
+                  ),
+                ),
+                ConstantWidgets.width20(context),
+                Text(
+                  "Loading",
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: AppPalette.greyColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          );
+          }else if (state is FetchCredentailEmpty) {
+           return Center(child: Text("Request processing failed due to empty data.", style: TextStyle(fontSize: 10),textAlign: TextAlign.center,));
+          }
+          else if (state is FetchCredentailLoad) {
             final credentials = state.credentials;
 
             return ListView.builder(
               itemCount: credentials.length,
               itemBuilder: (context, index) {
                 final item = credentials[index];
-
+              
                 return ListTile(
                   leading: Icon(item.itemType.icon, color: item.itemType.color, size: 30,),
                   title: Text(item.itemType.label, style: TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
                   subtitle: Text(item.name, overflow: TextOverflow.ellipsis,),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(docId: item.docId ?? '', label: item.itemType.label,)));
                   },
                 );
               },
             );
           }
-          return const SizedBox();
+           return Center(child: Text("Request processing failed. Try again later.", style: TextStyle(fontSize: 10),textAlign: TextAlign.center,));
         },
       ),
     );
@@ -232,7 +286,20 @@ extension ItemTypeExtension on ItemType {
         return AppPalette.redColor;
     }
   }
-
+    String get dbKey {
+    switch (this) {
+      case ItemType.login:
+        return "isLogin";
+      case ItemType.creditCard:
+        return "isCreditCard";
+      case ItemType.notes:
+        return "isNotes";
+      case ItemType.identity:
+        return "isIdentity";
+      case ItemType.address:
+        return "isAddress";
+    }
+  }
   List<String> get requiredFields {
     switch (this) {
       case ItemType.login:
@@ -293,10 +360,9 @@ void showAddBottomSheet(BuildContext context, bool val) {
                   context.read<CreateCubit>().setItem(item);
                   if (val) {
                     Navigator.pushNamed(context, AppRoutes.creteScreen);
-                  }else {
-                    //next navigation
+                  } else {
+                    Navigator.pushNamed(context, AppRoutes.category);
                   }
-                  
                 },
                 child: Row(
                   children: [

@@ -1,5 +1,6 @@
 
 import 'package:authenticator/core/constant/constant.dart';
+import 'package:authenticator/features/presentation/screen/category_screen.dart';
 import 'package:authenticator/features/presentation/screen/create_screen.dart';
 import 'package:authenticator/features/presentation/screen/login_screen.dart';
 import 'package:authenticator/features/presentation/screen/navigation.dart';
@@ -11,6 +12,7 @@ class AppRoutes {
   static const String login  = '/login_screen';
   static const String nav   = '/navigation';
   static const String creteScreen = '/create_screen';
+  static const String category = '/category_screen';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -22,6 +24,8 @@ class AppRoutes {
       return MaterialPageRoute(builder: (_) => BottomNavigationControllers());
       case creteScreen:
       return MaterialPageRoute(builder: (_) => CreateScreen());
+      case category:
+      return MaterialPageRoute(builder: (_) => CategoryScreen());
       default:
         return MaterialPageRoute(
           builder:

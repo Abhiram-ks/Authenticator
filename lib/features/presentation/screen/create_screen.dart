@@ -23,7 +23,7 @@ class CreateScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+    final GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -95,7 +95,7 @@ class CreateScreen extends StatelessWidget {
                           horizontal: screenWidth * .05,
                         ),
                         child: Form(
-                          key: _formkey,
+                          key: formkey,
                           child: BlocBuilder<FormCubit, CustomFormState>(
                             builder: (context, formState) {
                               final fields = selectedItem.requiredFields;
@@ -167,7 +167,7 @@ class CreateScreen extends StatelessWidget {
                                 onPressed:
                                     formState.canSave
                                         ? () {
-                                          if (_formkey.currentState
+                                          if (formkey.currentState
                                                   ?.validate() ??
                                               false) {
                                             final values =

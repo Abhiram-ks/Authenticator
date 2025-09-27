@@ -15,6 +15,6 @@ class FetchCredentailError extends FetchCredentailState {
 }
 
 class FetchCredentailLoad extends FetchCredentailState {
-  final List<CredentialEntity> credentials;
+  final List<CredentialModel> credentials;
   FetchCredentailLoad(this.credentials);
 }
