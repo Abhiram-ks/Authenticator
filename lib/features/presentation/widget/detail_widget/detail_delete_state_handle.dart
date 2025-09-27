@@ -21,8 +21,7 @@ void deleteCredentialStateHandle(
   } else if (state is DeleteCredentialWithFavConfirmationAlert) {
     showCupertinoDialog(
       context: context,
-      builder:
-          (dialogContext) => CupertinoAlertDialog(
+      builder: (dialogContext) => CupertinoAlertDialog(
             title: Text('Session Warning'),
             content: Text(
              'Are you sure you want to delete this data? Your request will be processed after the favorite category is disabled, and then the deletion will proceed.'
