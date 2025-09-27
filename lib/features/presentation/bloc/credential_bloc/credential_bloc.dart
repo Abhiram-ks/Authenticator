@@ -58,7 +58,7 @@ class CredentialBloc extends Bloc<CredentialEvent, CredentialState> {
         occupation: event.val['Occupation'],
         company: event.val['Company'],
         department: event.val['Department'],
-        jobTitle: event.val['Job Title'],
+        jobTitle: event.val['Job Titile'],
         identityAddress: event.val['Address'],
         email: event.val['Email'],
         homePhone: event.val['Home Phone'],

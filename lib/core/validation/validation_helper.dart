@@ -21,7 +21,7 @@ static String? validateField(String fieldName, String? value) {
     "card number",
     "expiry date",
     "pin",
-    "postal code or zip code",
+    "Postal Code or Zip Code",
     "home phone",
   ];
 

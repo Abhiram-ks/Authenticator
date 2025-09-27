@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_textfiled.dart';
 import 'package:authenticator/core/constant/constant.dart';
@@ -215,7 +213,7 @@ class _SearchBuilderWidgetState extends State<SearchBuilderWidget> {
                   subtitle: Text(item.name, overflow: TextOverflow.ellipsis,),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(docId: item.docId ?? '', label: item.itemType.label,)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(docId: item.docId ?? '', label: item.itemType.label,userId: item.uid)));
                   },
                 );
               },

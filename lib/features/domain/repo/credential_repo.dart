@@ -10,4 +10,10 @@ abstract class CredentialRepositroy {
    
    //! Fetch credentials as a Strem
   Stream<CredentialModel> fetchSingleCredential({required String docId});
+
+  //! Update credential
+  Future<bool> updateCredential({required String docId, required CredentialEntity credential});
+
+  //! Delete credential
+  Future<bool> deleteCredential({required String docId});
 }

@@ -53,5 +53,28 @@ Stream<CredentialModel> fetchSingleCredential(String docId) {
   });
 }
 
+  //! Update Credential
+  Future<bool> updateCredential(String docId, CredentialModel model) async {
+    try {
+      await _firestore.collection("credentials").doc(docId).update(model.toJson());
+      return true;
+    } on FirebaseException catch (e) {
+      throw Exception('Firebase error: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error occurred: $e');
+    }
+  }
+
+  //! Delete Credential
+  Future<bool> deleteCredential(String docId) async {
+    try {
+      await _firestore.collection("credentials").doc(docId).delete();
+      return true;
+    } on FirebaseException catch (e) {
+      throw Exception('Firebase error: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error occurred: $e');
+    }
+  }
 
 }

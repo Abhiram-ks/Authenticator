@@ -93,7 +93,6 @@ class CredentialModel extends CredentialEntity {
     );
   }
 
-  /// ✅ Convert model to Firestore JSON
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
@@ -131,7 +130,6 @@ class CredentialModel extends CredentialEntity {
       'isLogin': isLogin,
       'isNotes': isNotes,
 
-      /// 🔹 Firestore timestamps
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };

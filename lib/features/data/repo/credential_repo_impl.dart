@@ -64,4 +64,53 @@ class CredentialRemoteDataSourceImpl implements CredentialRepositroy {
   Stream<CredentialModel> fetchSingleCredential({required String docId}) {
     return remote.fetchSingleCredential(docId);
   }
+
+  //! Update credential
+  @override
+  Future<bool> updateCredential({required String docId, required CredentialEntity credential}) async {
+    final model = CredentialModel(
+      uid: credential.uid,
+      name: credential.name,
+      notes: credential.notes,
+      username: credential.username,
+      password: credential.password,
+      url: credential.url,
+      cardHolderName: credential.cardHolderName,
+      cardNumber: credential.cardNumber,
+      cardType: credential.cardType,
+      expiryDate: credential.expiryDate,
+      pin: credential.pin,
+      postalCode: credential.postalCode,
+      firstName: credential.firstName,
+      lastName: credential.lastName,
+      sex: credential.sex,
+      birthday: credential.birthday,
+      occupation: credential.occupation,
+      company: credential.company,
+      department: credential.department,
+      jobTitle: credential.jobTitle,
+      identityAddress: credential.identityAddress,
+      email: credential.email,
+      homePhone: credential.homePhone,
+      cellPhone: credential.cellPhone,
+      addressLine1: credential.addressLine1,
+      addressLine2: credential.addressLine2,
+      city: credential.city,
+      country: credential.country,
+      state: credential.state,
+      isAddress: credential.isAddress,
+      isCreditCard: credential.isCreditCard,
+      isIdentity: credential.isIdentity,
+      isLogin: credential.isLogin,
+      isNotes: credential.isNotes,
+    );
+
+    return await remote.updateCredential(docId, model);
+  }
+
+  //! Delete credential
+  @override
+  Future<bool> deleteCredential({required String docId}) async {
+    return await remote.deleteCredential(docId);
+  }
 }

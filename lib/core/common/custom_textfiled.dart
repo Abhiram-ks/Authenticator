@@ -19,8 +19,9 @@ class TextFormFieldWidget extends StatelessWidget {
   final IconData? suffixIconData;
   final VoidCallback? suffixIconAction;
   final double? borderRadius;
-    final int? minLines;  
-  final int? maxLines;  
+  final int? minLines;  
+  final int? maxLines;
+  final String? initialValue;
 
   const TextFormFieldWidget({
     super.key,
@@ -40,6 +41,7 @@ class TextFormFieldWidget extends StatelessWidget {
     this.borderRadius = 10,
     this.minLines = 1,   
     this.maxLines = 1,
+    this.initialValue,
   });
 
   @override
@@ -73,6 +75,7 @@ class TextFormFieldWidget extends StatelessWidget {
                 builder: (context, isVisible) {
                   return TextFormField(
                     controller: controller,
+                    initialValue: initialValue,
                     validator: validate,
                     obscureText: isPasswordField ? !isVisible : false,
                     style: const TextStyle(fontSize: 16),
