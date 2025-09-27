@@ -2,6 +2,7 @@
 import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/features/presentation/screen/category_screen.dart';
 import 'package:authenticator/features/presentation/screen/create_screen.dart';
+import 'package:authenticator/features/presentation/screen/favrites_screen.dart';
 import 'package:authenticator/features/presentation/screen/login_screen.dart';
 import 'package:authenticator/features/presentation/screen/navigation.dart';
 import 'package:authenticator/features/presentation/screen/splash_screen.dart';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const String nav   = '/navigation';
   static const String creteScreen = '/create_screen';
   static const String category = '/category_screen';
+  static const String favorite = '/favrites_screen';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -26,6 +28,8 @@ class AppRoutes {
       return MaterialPageRoute(builder: (_) => CreateScreen());
       case category:
       return MaterialPageRoute(builder: (_) => CategoryScreen());
+      case favorite:
+      return MaterialPageRoute(builder: (_) => FavritesScreen());
       default:
         return MaterialPageRoute(
           builder:

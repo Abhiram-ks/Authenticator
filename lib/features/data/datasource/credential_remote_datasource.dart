@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

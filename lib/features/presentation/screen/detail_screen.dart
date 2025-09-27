@@ -20,6 +20,8 @@ import 'package:authenticator/features/presentation/bloc/delete_credential_bloc/
 import 'package:authenticator/features/presentation/bloc/delete_credential_bloc/delete_credential_state.dart';
 import 'package:authenticator/features/presentation/bloc/delete_credential_bloc/delete_credential_event.dart';
 import 'package:authenticator/features/presentation/screen/edit_screen.dart';
+import 'package:authenticator/features/presentation/widget/detail_widget/detail_custom_password_widget.dart';
+import 'package:authenticator/features/presentation/widget/detail_widget/detail_delete_state_handle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,6 +61,9 @@ class DetailScreen extends StatelessWidget {
                   repo: CredentialRemoteDataSourceImpl(
                     remote: CredentialRemoteDataSource(),
                   ),
+                ),
+                getFavoritesUseCase: GetFavoritesUseCase(
+                  FavoriteRepositoryImpl(remote: FavlikeRemoteDatasource()),
                 ),
               ),
         ),
@@ -129,264 +134,289 @@ class _DetailBodyState extends State<DetailBody> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: widget.width * .06),
-      child: BlocListener<DeleteCredentialBloc, DeleteCredentialState>(
-        listener: (context, deleteState) {
-          if (deleteState is DeleteCredentialSuccess) {
-            CustomSnackBar.show(
-              context,
-              message: deleteState.message,
-              textAlign: TextAlign.center,
-              backgroundColor: AppPalette.greenColor,
-            );
-            Navigator.of(context).pop(true);
-          } else if (deleteState is DeleteCredentialError) {
-            CustomSnackBar.show(
-              context,
-              message: deleteState.message,
-              textAlign: TextAlign.center,
-              backgroundColor: AppPalette.redColor,
-            );
-          }
-        },
-        child: BlocBuilder<SingleCredentialBloc, SingleCredentialState>(
-          builder: (context, state) {
-            if (state is SingleCredentialLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is SingleCredentialLoaded) {
-              final credential = state.model;
-              return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${widget.lable} Detail',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'To keep our community safe, your information is used for identity verification and is protected with end-to-end encryption.',
-                    ),
-                    ConstantWidgets.hight30(context),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: BlocBuilder<LikeCubit, LikeState>(
-                        builder: (context, likeState) {
-                          bool isLiked = false;
-                          if (likeState is LikeLoaded) {
-                            isLiked = likeState.isLiked;
-                          }
-
-                          return IconButton(
-                            icon: Icon(
-                              isLiked ? Icons.favorite : Icons.favorite_outline_sharp,
-                              color: isLiked    ? AppPalette.redColor  : AppPalette.greyColor,
+      child: BlocBuilder<SingleCredentialBloc, SingleCredentialState>(
+        builder: (context, state) {
+          if (state is SingleCredentialLoading) {
+                return Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 12,
+                              width: 12,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                backgroundColor: AppPalette.greyColor,
+                                color: AppPalette.blueColor,
+                              ),
                             ),
-                            onPressed: () {
-                              context.read<LikeCubit>().toggleLike(
-                                widget.docId,
-                                isLiked,
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    Text(
-                      credential.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    ConstantWidgets.hight10(context),
-                    if (credential.username != null)
-                      textDetailsFiled(
-                        labelText: 'User Name',
-                        subLabelText: credential.username ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-
-                    if (credential.cardHolderName != null)
-                      textDetailsFiled(
-                        labelText: 'Card Holder Name',
-                        subLabelText:
-                            credential.cardHolderName ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    if (credential.cardHolderName != null)
-                      textDetailsFiled(
-                        labelText: 'Card Holder Name',
-                        subLabelText:
-                            credential.cardHolderName ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    if (credential.cardType != null)
-                      textDetailsFiled(
-                        labelText: 'Card Type',
-                        subLabelText: credential.cardType ?? 'Fetching Failed',
-                      ),
-
-                    if (credential.firstName != null)
-                      textDetailsFiled(
-                        labelText: 'First Name',
-                        subLabelText: credential.firstName ?? 'Fetching Failed',
-                      ),
-                    if (credential.lastName != null)
-                      textDetailsFiled(
-                        labelText: 'Last Name',
-                        subLabelText: credential.lastName ?? 'Fetching Failed',
-                      ),
-                    if (credential.sex != null)
-                      textDetailsFiled(
-                        labelText: 'Sex',
-                        subLabelText: credential.sex ?? 'Fetching Failed',
-                      ),
-                    if (credential.birthday != null)
-                      textDetailsFiled(
-                        labelText: 'Birthday',
-                        subLabelText: credential.birthday ?? 'Fetching Failed',
-                      ),
-                    if (credential.occupation != null)
-                      textDetailsFiled(
-                        labelText: 'Occupation',
-                        subLabelText:
-                            credential.occupation ?? 'Fetching Failed',
-                      ),
-                    if (credential.company != null)
-                      textDetailsFiled(
-                        labelText: 'Company',
-                        subLabelText: credential.company ?? 'Fetching Failed',
-                      ),
-                    if (credential.department != null)
-                      textDetailsFiled(
-                        labelText: 'Department',
-                        subLabelText:
-                            credential.department ?? 'Fetching Failed',
-                      ),
-                    if (credential.jobTitle != null)
-                      textDetailsFiled(
-                        labelText: 'Job Titile',
-                        subLabelText: credential.jobTitle ?? 'Fetching Failed',
-                      ),
-                    if (credential.identityAddress != null)
-                      textDetailsFiled(
-                        labelText: 'Address',
-                        subLabelText:
-                            credential.identityAddress ?? 'Fetching Failed',
-                      ),
-                    if (credential.email != null)
-                      textDetailsFiled(
-                        labelText: 'Email',
-                        subLabelText: credential.email ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    if (credential.homePhone != null)
-                      textDetailsFiled(
-                        labelText: 'Home Phone',
-                        subLabelText: credential.homePhone ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    if (credential.cellPhone != null)
-                      textDetailsFiled(
-                        labelText: 'Cell Phone',
-                        subLabelText: credential.cellPhone ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    if (credential.addressLine1 != null)
-                      textDetailsFiled(
-                        labelText: 'Address Line 1',
-                        subLabelText:
-                            credential.addressLine1 ?? 'Fetching Failed',
-                      ),
-                    if (credential.addressLine2 != null)
-                      textDetailsFiled(
-                        labelText: 'Address Line 2',
-                        subLabelText:
-                            credential.addressLine2 ?? 'Fetching Failed',
-                      ),
-                    if (credential.city != null)
-                      textDetailsFiled(
-                        labelText: 'City',
-                        subLabelText: credential.city ?? 'Fetching Failed',
-                      ),
-                    if (credential.country != null)
-                      textDetailsFiled(
-                        labelText: 'Country',
-                        subLabelText: credential.country ?? 'Fetching Failed',
-                      ),
-                    if (credential.state != null)
-                      textDetailsFiled(
-                        labelText: 'State',
-                        subLabelText: credential.state ?? 'Fetching Failed',
-                      ),
-                    if (credential.postalCode != null)
-                      textDetailsFiled(
-                        labelText: 'Postal Code or Zip Code',
-                        subLabelText:
-                            credential.postalCode ?? 'Fetching Failed',
-                        enableClipboard: true,
-                      ),
-                    const Divider(color: AppPalette.hintColor),
-
-                    textDetailsFiled(
-                      labelText: 'Notes',
-                      subLabelText: credential.notes,
-                    ),
-                    const Divider(color: AppPalette.hintColor),
-                    Text(
-                      "Updated: ${credential.updatedAt?.toLocal().toString() ?? "N/A"}",
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                    ConstantWidgets.hight30(context),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomButton(
-                            text: 'Edit',
-                            onPressed: () async {
-                              final result = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => EditScreen(
-                                        credential: credential,
-                                        label: widget.lable,
-                                      ),
-                                ),
-                              );
-                              if (result == true) {
-                                if (!context.mounted) return;
-                                context.read<SingleCredentialBloc>().add(
-                                  SingleCredentialRequest(docId: widget.docId),
-                                );
-                              }
-                            },
-                            bgColor: AppPalette.blueColor,
-                          ),
+                            ConstantWidgets.width20(context),
+                            Text(
+                              "Loading",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: AppPalette.greyColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        ConstantWidgets.width20(context),
-                        Expanded(
+                      );
+          }
+           else if (state is SingleCredentialLoaded) {
+            final credential = state.model;
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${widget.lable} Detail',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'To keep our community safe, your information is used for identity verification and is protected with end-to-end encryption.',
+                  ),
+                  ConstantWidgets.hight30(context),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: BlocBuilder<LikeCubit, LikeState>(
+                      builder: (context, likeState) {
+                        bool isLiked = false;
+                        if (likeState is LikeLoaded) {
+                          isLiked = likeState.isLiked;
+                        }
+
+                        return IconButton(
+                          icon: Icon(
+                            isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_outline_sharp,
+                            color:
+                                isLiked
+                                    ? AppPalette.redColor
+                                    : AppPalette.greyColor,
+                          ),
+                          onPressed: () {
+                            context.read<LikeCubit>().toggleLike(
+                              widget.docId,
+                              isLiked,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Text(
+                    credential.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ConstantWidgets.hight10(context),
+                  if (credential.username != null)
+                    textDetailsFiled(
+                      labelText: 'User Name',
+                      subLabelText: credential.username ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  if(credential.password != null) 
+                  PasswordDetailField(password: credential.password, label: 'Password'),
+                   if(credential.cardNumber != null) 
+                  PasswordDetailField(password: credential.cardNumber, label: 'Card Number'),
+                  if (credential.cardHolderName != null)
+                    textDetailsFiled(
+                      labelText: 'Card Holder Name',
+                      subLabelText:   credential.cardHolderName ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  if (credential.cardType != null)
+                    textDetailsFiled(
+                      labelText: 'Card Type',
+                      subLabelText: credential.cardType ?? 'Fetching Failed',
+                    ),
+                 if (credential.expiryDate != null)
+                    PasswordDetailField(
+                      label: 'Expiry Date',
+                      password: credential.expiryDate ,
+                    ),
+                  if (credential.pin != null)
+                    PasswordDetailField(
+                      label: 'Pin',
+                      password: credential.pin ,
+                    ),
+                  if (credential.firstName != null)
+                    textDetailsFiled(
+                      labelText: 'First Name',
+                      subLabelText: credential.firstName ?? 'Fetching Failed',
+                    ),
+                  if (credential.lastName != null)
+                    textDetailsFiled(
+                      labelText: 'Last Name',
+                      subLabelText: credential.lastName ?? 'Fetching Failed',
+                    ),
+                  if (credential.sex != null)
+                    textDetailsFiled(
+                      labelText: 'Sex',
+                      subLabelText: credential.sex ?? 'Fetching Failed',
+                    ),
+                  if (credential.birthday != null)
+                    textDetailsFiled(
+                      labelText: 'Birthday',
+                      subLabelText: credential.birthday ?? 'Fetching Failed',
+                    ),
+                  if (credential.occupation != null)
+                    textDetailsFiled(
+                      labelText: 'Occupation',
+                      subLabelText: credential.occupation ?? 'Fetching Failed',
+                    ),
+                  if (credential.company != null)
+                    textDetailsFiled(
+                      labelText: 'Company',
+                      subLabelText: credential.company ?? 'Fetching Failed',
+                    ),
+                  if (credential.department != null)
+                    textDetailsFiled(
+                      labelText: 'Department',
+                      subLabelText: credential.department ?? 'Fetching Failed',
+                    ),
+                  if (credential.jobTitle != null)
+                    textDetailsFiled(
+                      labelText: 'Job Titile',
+                      subLabelText: credential.jobTitle ?? 'Fetching Failed',
+                    ),
+                  if (credential.identityAddress != null)
+                    textDetailsFiled(
+                      labelText: 'Address',
+                      subLabelText:
+                          credential.identityAddress ?? 'Fetching Failed',
+                    ),
+                  if (credential.email != null)
+                    textDetailsFiled(
+                      labelText: 'Email',
+                      subLabelText: credential.email ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  if (credential.homePhone != null)
+                    textDetailsFiled(
+                      labelText: 'Home Phone',
+                      subLabelText: credential.homePhone ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  if (credential.cellPhone != null)
+                    textDetailsFiled(
+                      labelText: 'Cell Phone',
+                      subLabelText: credential.cellPhone ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  if (credential.addressLine1 != null)
+                    textDetailsFiled(
+                      labelText: 'Address Line 1',
+                      subLabelText:
+                          credential.addressLine1 ?? 'Fetching Failed',
+                    ),
+                  if (credential.addressLine2 != null)
+                    textDetailsFiled(
+                      labelText: 'Address Line 2',
+                      subLabelText:
+                          credential.addressLine2 ?? 'Fetching Failed',
+                    ),
+                  if (credential.city != null)
+                    textDetailsFiled(
+                      labelText: 'City',
+                      subLabelText: credential.city ?? 'Fetching Failed',
+                    ),
+                  if (credential.country != null)
+                    textDetailsFiled(
+                      labelText: 'Country',
+                      subLabelText: credential.country ?? 'Fetching Failed',
+                    ),
+                  if (credential.state != null)
+                    textDetailsFiled(
+                      labelText: 'State',
+                      subLabelText: credential.state ?? 'Fetching Failed',
+                    ),
+                  if (credential.postalCode != null)
+                    textDetailsFiled(
+                      labelText: 'Postal Code or Zip Code',
+                      subLabelText: credential.postalCode ?? 'Fetching Failed',
+                      enableClipboard: true,
+                    ),
+                  const Divider(color: AppPalette.hintColor),
+
+                  textDetailsFiled(
+                    labelText: 'Notes',
+                    subLabelText: credential.notes,
+                  ),
+                  const Divider(color: AppPalette.hintColor),
+                  Text(
+                    "Updated: ${credential.updatedAt?.toLocal().toString() ?? "N/A"}",
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  ConstantWidgets.hight30(context),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          text: 'Edit',
+                          onPressed: () async {
+                            final result = await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => EditScreen(
+                                      credential: credential,
+                                      label: widget.lable,
+                                    ),
+                              ),
+                            );
+                            if (result == true) {
+                              if (!context.mounted) return;
+                              context.read<SingleCredentialBloc>().add(
+                                SingleCredentialRequest(docId: widget.docId),
+                              );
+                            }
+                          },
+                          bgColor: AppPalette.blueColor,
+                        ),
+                      ),
+                      ConstantWidgets.width20(context),
+                      Expanded(
+                        child: BlocListener<DeleteCredentialBloc, DeleteCredentialState>(
+                          listener: (context, deleteState) {
+                        deleteCredentialStateHandle(context, deleteState, credential.docId ?? '');
+                          },
                           child: CustomButton(
                             text: 'Delete',
-                            onPressed: () {},
-                            bgColor: AppPalette.redColor,
+                            onPressed: () {
+                              context.read<DeleteCredentialBloc>().add(DeleteCredentialRequest(docId: credential.docId ?? '', uid: credential.uid));
+                            },
+                            textColor: AppPalette.redColor,
+                            borderColor: AppPalette.redColor,
+                            bgColor: AppPalette.whiteColor,
                           ),
                         ),
-                      ],
-                    ),
-                    ConstantWidgets.hight20(context),
-                  ],
-                ),
-              );
-            } else if (state is SingleCredentialError) {
-              return Center(child: Text("Error: ${state.message}"));
-            } else {
-              return const Center(child: Text("No data found"));
-            }
-          },
-        ),
+                      ),
+                    ],
+                  ),
+                  ConstantWidgets.hight20(context),
+                ],
+              ),
+            );
+          } 
+          return Center(child: Column(
+                 crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+             children: [
+              Icon(Icons.cloud_off_outlined, size: 50,),
+              Text('Request failed', style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+               Text("Request processing failed. Try again later.", style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
+             ],
+           ));
+        },
       ),
     );
   }
@@ -404,11 +434,10 @@ Widget textDetailsFiled({
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            // ✅ ensures text can wrap
             child: Text(
               labelText,
               style: const TextStyle(fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis, // just in case
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (enableClipboard)
@@ -428,7 +457,7 @@ Widget textDetailsFiled({
         subLabelText,
         style: const TextStyle(color: AppPalette.greyColor),
         textAlign: TextAlign.start,
-        softWrap: true, // ✅ allows multi-line wrapping
+        softWrap: true,
       ),
     ],
   );

@@ -5,6 +5,7 @@ import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/features/data/datasource/account_remote_datasource.dart';
 import 'package:authenticator/features/presentation/bloc/totp_cubit/totp_cubit.dart';
 import 'package:authenticator/features/presentation/widget/home_scaner_widget/scaner_auth_account_data.dart';
+import 'package:authenticator/features/presentation/screen/cloud_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -113,6 +114,13 @@ class CloudScreen extends StatelessWidget {
                             elevation: 1,
                             child: ListTile(
                               key: ValueKey(a.id),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CloudDetailScreen(account: a),
+                                  ),
+                                );
+                              },
 
                               title: Text(
                                 '${a.issuer.isNotEmpty ? a.issuer : 'Account'}: ${a.label}',

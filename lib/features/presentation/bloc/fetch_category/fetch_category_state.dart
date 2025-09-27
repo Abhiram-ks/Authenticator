@@ -7,7 +7,7 @@ final class FetchCategoryInitial extends FetchCategoryState {}
 final class FetchCategoryLoading extends FetchCategoryState {}
 final class FetchCategoryEmpty extends FetchCategoryState {}
 final class FetchCategorySuccess extends FetchCategoryState {
-  final List<CredentialEntity> credentials;
+  final List<CredentialModel> credentials;
   FetchCategorySuccess({required this.credentials});
 }
 

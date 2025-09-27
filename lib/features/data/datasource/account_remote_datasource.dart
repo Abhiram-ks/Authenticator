@@ -42,6 +42,14 @@ class AccountRemoteDataSource {
             .map((d) => AuthAccount.fromMap(d.data(), fallbackId: d.id))
             .toList());
   }
+
+  Future<void> deleteAccount(String accountId) async {
+    final uid = await _uid();
+    if (uid == null || uid.isEmpty) {
+      throw Exception('Not signed in');
+    }
+    await _collection(uid).doc(accountId).delete();
+  }
 }
 
 

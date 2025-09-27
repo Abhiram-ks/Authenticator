@@ -1,4 +1,5 @@
 import 'package:authenticator/features/data/datasource/auth_local_datasource.dart';
+import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:authenticator/features/domain/entity/credential_entity.dart';
 import 'package:authenticator/features/domain/usecase/fetch_category_usecase.dart';
 import 'package:bloc/bloc.dart';
@@ -27,7 +28,7 @@ class FetchCategoryBloc extends Bloc<FetchCategoryEvent, FetchCategoryState> {
         return;
       }
 
-      await emit.forEach<List<CredentialEntity>>(
+      await emit.forEach<List<CredentialModel>>(
         usecase.execute(uid: userId, category:event.category),
         onData: (credentials) {
           if (credentials.isEmpty) {

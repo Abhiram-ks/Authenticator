@@ -13,6 +13,7 @@ class DeleteaccountBloc extends Bloc<DeleteaccountEvent, DeleteaccountState> {
   final StreamBackupUseCase useCase;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
   DeleteaccountBloc({required this.local, required this.useCase}) : super(DeleteaccountInitial()) {
     on<DeleteRequest>(_onDeleteRequest);
     on<DeleteConfirm>(_onDeleteConfirm);
@@ -54,7 +55,7 @@ class DeleteaccountBloc extends Bloc<DeleteaccountEvent, DeleteaccountState> {
           await  _googleSignIn.signOut();
           emit(DeleteAccountSuccess());
         } else {
-          emit(DeleteAccountFailure(message: "Unable to delete. Try again later."));
+          emit(DeleteAccountFailure(message: "Unable to delet. Try again later."));
         }
     } catch (e) {
       emit(DeleteAccountFailure(message: e.toString()));

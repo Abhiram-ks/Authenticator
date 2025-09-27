@@ -19,4 +19,9 @@ class GetFavoritesUseCase {
   GetFavoritesUseCase(this.repo);
 
   Stream<List<String>> call(String userId) => repo.getFavorites(userId);
+
+    Future<bool> isFavorite(String userId, String docId) async {
+    final snapshot = await repo.getFavorites(userId).first; 
+    return snapshot.contains(docId);
+  }
 }

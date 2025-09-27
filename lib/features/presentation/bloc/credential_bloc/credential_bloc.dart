@@ -1,4 +1,4 @@
-import 'package:authenticator/core/security/security_helper.dart';
+
 import 'package:authenticator/features/data/datasource/auth_local_datasource.dart';
 import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:authenticator/features/domain/usecase/credential_usecase.dart';
@@ -38,18 +38,13 @@ class CredentialBloc extends Bloc<CredentialEvent, CredentialState> {
         name: event.val['Name'] ?? "",
         notes: event.val['Notes'] ?? "",
         username: event.val['Username'],
-        password: event.val['Password'] != null &&
-                event.val['Password']!.isNotEmpty
-            ? SecurityHelper.encryptText(event.val['Password']!)
-            : null,
+        password: event.val['Password'],
         url: event.val['URL'],
         cardHolderName: event.val['Card Holder Name'],
         cardNumber: event.val['Card Number'],
         cardType: event.val['Card Type'],
         expiryDate: event.val['Expiry Date'],
-        pin: event.val['Pin'] != null && event.val['Pin']!.isNotEmpty
-            ? SecurityHelper.encryptText(event.val['Pin']!)
-            : null,
+        pin: event.val['Pin'],
         postalCode: event.val['Postal Code or Zip Code'],
         firstName: event.val['First Name'],
         lastName: event.val['Last Name'],

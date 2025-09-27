@@ -1,5 +1,5 @@
-import 'package:authenticator/features/domain/entity/credential_entity.dart';
+import 'package:authenticator/features/data/models/credential_model.dart';
 
 abstract class CategoryRepository {
- Stream<List<CredentialEntity>> requestCategory({required String uid, required String category});
+ Stream<List<CredentialModel>> requestCategory({required String uid, required String category});
 }

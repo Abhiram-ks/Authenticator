@@ -23,7 +23,7 @@ class LikeCubit extends Cubit<LikeState> {
   void watchFavorites(String docId) {
     emit(LikeLoading());
 
-    _subscription = getFavoritesUseCase(userId).listen((favorites) {
+    _subscription = getFavoritesUseCase.call(userId).listen((favorites) {
       final isLiked = favorites.contains(docId);
       emit(LikeLoaded(isLiked: isLiked));
     }, onError: (e) {
