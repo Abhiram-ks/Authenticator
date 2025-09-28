@@ -1,5 +1,7 @@
 import 'package:authenticator/core/common/custom_appbar.dart';
+import 'package:authenticator/core/common/custom_luncher_function.dart';
 import 'package:authenticator/core/constant/constant.dart';
+import 'package:authenticator/core/routes/app_routes.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/features/data/datasource/auth_local_datasource.dart';
 import 'package:authenticator/features/data/datasource/settings_remote_datasource.dart';
@@ -8,6 +10,7 @@ import 'package:authenticator/features/domain/usecase/settings_usecase.dart';
 import 'package:authenticator/features/presentation/bloc/backup_cubit/backup_cubit.dart';
 import 'package:authenticator/features/presentation/bloc/delete_account_bloc/deleteaccount_bloc.dart';
 import 'package:authenticator/features/presentation/bloc/logout_bloc/logout_bloc.dart';
+import 'package:authenticator/features/presentation/screen/password_generation_screen.dart';
 import 'package:authenticator/features/presentation/widget/settings_widget/settings_delete_state_handle.dart';
 import 'package:authenticator/features/presentation/widget/settings_widget/settings_logout_state_handle.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,15 +76,20 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-class SettingsBody extends StatelessWidget {
+class SettingsBody extends StatefulWidget {
   final double width;
 
   const SettingsBody({super.key, required this.width});
 
   @override
+  State<SettingsBody> createState() => _SettingsBodyState();
+}
+
+class _SettingsBodyState extends State<SettingsBody> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+      padding: EdgeInsets.symmetric(horizontal: widget.width * 0.05),
 
       child: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
@@ -103,7 +111,12 @@ class SettingsBody extends StatelessWidget {
                     ),
                     title: const Text("Generate Password"),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.passwordGeneration,
+                      );
+                    },
                   ),
                   const Divider(height: 1, color: AppPalette.hintColor),
                   BlocBuilder<BackupCubit, bool>(
@@ -147,17 +160,9 @@ class SettingsBody extends StatelessWidget {
                     ),
                     title: const Text("How to Import True Auth Authenticator"),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
-                  ),
-                  const Divider(height: 1, color: AppPalette.hintColor),
-                  ListTile(
-                    leading: const Icon(
-                      CupertinoIcons.doc_text,
-                      color: Color.fromARGB(255, 3, 200, 244),
-                    ),
-                    title: const Text("Privacy Policy"),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
+                    onTap: () {
+                      showHelpDialogAuthenticator(context);
+                    },
                   ),
                   const Divider(height: 1, color: AppPalette.hintColor),
                   ListTile(
@@ -165,9 +170,35 @@ class SettingsBody extends StatelessWidget {
                       CupertinoIcons.shield,
                       color: AppPalette.redColor,
                     ),
+                    title: const Text("Privacy Policy"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      openWebPage(
+                        context: context,
+                        url:
+                            'https://www.termsfeed.com/live/31ef7f49-ecef-4a44-9945-33f0edf2874a',
+                        errorMessage:
+                            'Privacy Policy cannot be opened at the moment due to an error.',
+                      );
+                    },
+                  ),
+                  const Divider(height: 1, color: AppPalette.hintColor),
+                  ListTile(
+                      leading: const Icon(
+                      CupertinoIcons.doc_text,
+                      color: Color.fromARGB(255, 3, 200, 244),
+                    ),
                     title: const Text("Terms and Conditions"),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {},
+                    onTap: () {
+                      openWebPage(
+                        context: context,
+                        url:
+                            'https://www.freeprivacypolicy.com/live/7907c4ca-15fd-41f5-a01d-f77d7b9d88fb',
+                        errorMessage:
+                            'Terms and Conditions cannot be opened at the moment due to an error.',
+                      );
+                    },
                   ),
                 ],
               ),
@@ -183,7 +214,7 @@ class SettingsBody extends StatelessWidget {
                 children: [
                   BlocListener<DeleteaccountBloc, DeleteaccountState>(
                     listener: (context, deleteAccountState) {
-                     deleteStateHandle(context, deleteAccountState);
+                      deleteStateHandle(context, deleteAccountState);
                     },
                     child: ListTile(
                       leading: Icon(

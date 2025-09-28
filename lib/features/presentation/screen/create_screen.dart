@@ -39,15 +39,6 @@ class CreateScreen extends StatelessWidget {
                     appBar: CustomAppBar(
                       title: 'No items selected',
                       isTitle: true,
-                      actions: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.help_outline,
-                            color: AppPalette.greyColor,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ],
                     ),
                     body: const Center(child: Text("No item selected")),
                   ),

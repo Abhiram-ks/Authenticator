@@ -1,6 +1,7 @@
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/features/presentation/bloc/progresser_cubit/progresser_cubit.dart';
+import 'package:authenticator/features/presentation/screen/password_generation_screen.dart';
 import 'package:authenticator/features/presentation/widget/home_scaner_widget/home_body_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,9 @@ class HomeScreen extends StatelessWidget {
                   title: 'Authenticator',
                   actions: [
                      IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showHelpDialogAuthenticator(context);
+                        },
                         icon: Icon(Icons.help_outline,color: AppPalette.greyColor,),
                       ),
                   ],

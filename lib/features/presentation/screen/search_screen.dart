@@ -8,6 +8,7 @@ import 'package:authenticator/features/domain/entity/credential_entity.dart';
 import 'package:authenticator/features/presentation/bloc/create_cubit/create_cubit.dart';
 import 'package:authenticator/features/presentation/bloc/fetch_credential_bloc/fetch_credentail_bloc.dart';
 import 'package:authenticator/features/presentation/screen/detail_screen.dart';
+import 'package:authenticator/features/presentation/screen/password_generation_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +36,9 @@ class SearchScreen extends StatelessWidget {
                       Icons.help_outline,
                       color: AppPalette.greyColor,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      showHelperDialogForPassword(context);
+                    },
                   ),
                 ],
               ),
@@ -158,7 +161,12 @@ class SearchBuilderWidget extends StatefulWidget {
   State<SearchBuilderWidget> createState() => _SearchBuilderWidgetState();
 }
 
-class _SearchBuilderWidgetState extends State<SearchBuilderWidget> {
+class _SearchBuilderWidgetState extends State<SearchBuilderWidget>
+    with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -169,6 +177,7 @@ class _SearchBuilderWidgetState extends State<SearchBuilderWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Expanded(
       child: BlocBuilder<FetchCredentailBloc, FetchCredentailState>(
         builder: (context, state) {
@@ -226,6 +235,7 @@ class _SearchBuilderWidgetState extends State<SearchBuilderWidget> {
       ),
     );
   }
+  
 }
 
 extension CredentialEntityExtension on CredentialEntity {

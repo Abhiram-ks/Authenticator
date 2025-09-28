@@ -1,13 +1,11 @@
-import 'dart:developer';
 
 import 'package:authenticator/core/common/custom_appbar.dart';
 import 'package:authenticator/core/common/custom_button.dart';
-import 'package:authenticator/core/common/custom_snackbar.dart';
+import 'package:authenticator/core/common/custom_luncher_function.dart';
 import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/features/data/datasource/credential_remote_datasource.dart';
 import 'package:authenticator/features/data/datasource/favlike_remote_datasource.dart';
-import 'package:authenticator/features/data/models/credential_model.dart';
 import 'package:authenticator/features/data/repo/credential_repo_impl.dart';
 import 'package:authenticator/features/data/repo/likefev_repo_impl.dart';
 import 'package:authenticator/features/domain/usecase/fetch_singel_usecase.dart';
@@ -137,33 +135,32 @@ class _DetailBodyState extends State<DetailBody> {
       child: BlocBuilder<SingleCredentialBloc, SingleCredentialState>(
         builder: (context, state) {
           if (state is SingleCredentialLoading) {
-                return Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 12,
-                              width: 12,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                backgroundColor: AppPalette.greyColor,
-                                color: AppPalette.blueColor,
-                              ),
-                            ),
-                            ConstantWidgets.width20(context),
-                            Text(
-                              "Loading",
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: AppPalette.greyColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-          }
-           else if (state is SingleCredentialLoaded) {
+            return Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 12,
+                    width: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      backgroundColor: AppPalette.blueColor,
+                      color: AppPalette.greyColor,
+                    ),
+                  ),
+                  ConstantWidgets.width20(context),
+                  Text(
+                    "Loading",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: AppPalette.greyColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else if (state is SingleCredentialLoaded) {
             final credential = state.model;
             return SingleChildScrollView(
               physics: BouncingScrollPhysics(),
@@ -224,14 +221,40 @@ class _DetailBodyState extends State<DetailBody> {
                       subLabelText: credential.username ?? 'Fetching Failed',
                       enableClipboard: true,
                     ),
-                  if(credential.password != null) 
-                  PasswordDetailField(password: credential.password, label: 'Password'),
-                   if(credential.cardNumber != null) 
-                  PasswordDetailField(password: credential.cardNumber, label: 'Card Number'),
+                  if (credential.url != null)
+                    Column(
+                      children: [
+                        ConstantWidgets.hight10(context),
+                        InkWell(
+                          onTap: () {
+                            openWebPage(
+                              context: context,
+                              url: credential.url ?? 'https://www.bluehost.com/in/blog/everything-you-need-to-know-about-404-errors/',
+                              errorMessage: 'URL not found!',
+                            );
+                          },
+                          child: Text(
+                            'Go to Website',
+                            style: TextStyle(color: AppPalette.blueColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (credential.password != null)
+                    PasswordDetailField(
+                      password: credential.password,
+                      label: 'Password',
+                    ),
+                  if (credential.cardNumber != null)
+                    PasswordDetailField(
+                      password: credential.cardNumber,
+                      label: 'Card Number',
+                    ),
                   if (credential.cardHolderName != null)
                     textDetailsFiled(
                       labelText: 'Card Holder Name',
-                      subLabelText:   credential.cardHolderName ?? 'Fetching Failed',
+                      subLabelText:
+                          credential.cardHolderName ?? 'Fetching Failed',
                       enableClipboard: true,
                     ),
                   if (credential.cardType != null)
@@ -239,16 +262,13 @@ class _DetailBodyState extends State<DetailBody> {
                       labelText: 'Card Type',
                       subLabelText: credential.cardType ?? 'Fetching Failed',
                     ),
-                 if (credential.expiryDate != null)
+                  if (credential.expiryDate != null)
                     PasswordDetailField(
                       label: 'Expiry Date',
-                      password: credential.expiryDate ,
+                      password: credential.expiryDate,
                     ),
                   if (credential.pin != null)
-                    PasswordDetailField(
-                      label: 'Pin',
-                      password: credential.pin ,
-                    ),
+                    PasswordDetailField(label: 'Pin', password: credential.pin),
                   if (credential.firstName != null)
                     textDetailsFiled(
                       labelText: 'First Name',
@@ -385,14 +405,26 @@ class _DetailBodyState extends State<DetailBody> {
                       ),
                       ConstantWidgets.width20(context),
                       Expanded(
-                        child: BlocListener<DeleteCredentialBloc, DeleteCredentialState>(
+                        child: BlocListener<
+                          DeleteCredentialBloc,
+                          DeleteCredentialState
+                        >(
                           listener: (context, deleteState) {
-                        deleteCredentialStateHandle(context, deleteState, credential.docId ?? '');
+                            deleteCredentialStateHandle(
+                              context,
+                              deleteState,
+                              credential.docId ?? '',
+                            );
                           },
                           child: CustomButton(
                             text: 'Delete',
                             onPressed: () {
-                              context.read<DeleteCredentialBloc>().add(DeleteCredentialRequest(docId: credential.docId ?? '', uid: credential.uid));
+                              context.read<DeleteCredentialBloc>().add(
+                                DeleteCredentialRequest(
+                                  docId: credential.docId ?? '',
+                                  uid: credential.uid,
+                                ),
+                              );
                             },
                             textColor: AppPalette.redColor,
                             borderColor: AppPalette.redColor,
@@ -406,16 +438,26 @@ class _DetailBodyState extends State<DetailBody> {
                 ],
               ),
             );
-          } 
-          return Center(child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.center,
+          }
+          return Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-             children: [
-              Icon(Icons.cloud_off_outlined, size: 50,),
-              Text('Request failed', style: TextStyle(fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-               Text("Request processing failed. Try again later.", style: TextStyle(fontSize: 10),textAlign: TextAlign.center,),
-             ],
-           ));
+              children: [
+                Icon(Icons.cloud_off_outlined, size: 50),
+                Text(
+                  'Request failed',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  "Request processing failed. Try again later.",
+                  style: TextStyle(fontSize: 10),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
         },
       ),
     );

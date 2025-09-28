@@ -33,15 +33,6 @@ class CategoryScreen extends StatelessWidget {
                     appBar: CustomAppBar(
                       title: 'No Category selected',
                       isTitle: true,
-                      actions: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.help_outline,
-                            color: AppPalette.greyColor,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ],
                     ),
                     body: const Center(child: Text("No Category selected")),
                   ),
@@ -57,15 +48,6 @@ class CategoryScreen extends StatelessWidget {
                     appBar: CustomAppBar(
                       title: selectedItem.label,
                       isTitle: true,
-                      actions: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.help_outline,
-                            color: AppPalette.greyColor,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ],
                     ),
                     body: CategoryBody(
                       screenWidth: screenWidth,

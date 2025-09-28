@@ -4,6 +4,7 @@ import 'package:authenticator/core/constant/constant.dart';
 import 'package:authenticator/core/themes/app_colors.dart';
 import 'package:authenticator/features/data/datasource/account_remote_datasource.dart';
 import 'package:authenticator/features/presentation/bloc/totp_cubit/totp_cubit.dart';
+import 'package:authenticator/features/presentation/screen/password_generation_screen.dart';
 import 'package:authenticator/features/presentation/widget/home_scaner_widget/scaner_auth_account_data.dart';
 import 'package:authenticator/features/presentation/screen/cloud_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,9 @@ class CloudScreen extends StatelessWidget {
                 isTitle: true,
                 actions: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showHelpDialogAuthenticator(context);
+                    },
                     icon: Icon(Icons.help_outline, color: AppPalette.greyColor),
                   ),
                 ],
